@@ -1,0 +1,19 @@
+Задание 4:
+1) sudo apt install clang llvm libbpf-dev // установка зависимостей
+2) clang -O2 -target bpf -c hello.bpf.c -o hello.bpf.o // компиляция файла
+3) sudo bpftool prog load hello.bpf.o /sys/fs/bpf/hello_xdp // загрузка файла
+
+Задание 5:
+1) sudo ip link set dev eth0 xdp obj hello.bpf.o sec xdp //подключение к сетевому интерфейсу [заместо eth0 может быть другой сетевой интерфейс]
+2) sudo bpftool net show // проверка работоспособности
+3) sudo ip link set dev eth0 xdp off //отключение
+
+Задание 6:
+Терминал №1
+1) sudo python3 hello-map.py
+Терминал №2
+2) sudo bpftool prog show name hello
+// Просмотр BPF-инструкций
+3) sudo bpftool prog dump xlated id [ID] // Заместо [ID] Написать id машины из команды 2
+// Просмотр JIT-скомпилированного кода
+4) sudo bpftool prog dump jited id [ID] // Заместо [ID] Написать id машины из команды 2
