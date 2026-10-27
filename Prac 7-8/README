@@ -1,0 +1,14 @@
+Для проверки работоспособности клиент-сервера:
+# Терминал 1 
+// Компиляция файлов server и client
+gcc server.c -o server
+gcc client.c -o client
+// Загрузка тестового файла
+echo "Hello from file for strace test" > testfile.txt
+// Запуск сервера
+./server 8080
+
+# Терминал 2
+strace -e trace=network -o strace_client.log \./client 127.0.0.1 8080 testfile.txt received.txt //запуск клиента с записью системных вызовов (strace)
+cat received.txt
+grep -E 'write|read|recvfrom|sendto|connect' strace_client.log | head -50 //Проверка передачи файлов в логах strace_client.log
