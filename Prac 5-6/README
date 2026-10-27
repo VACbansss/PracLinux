@@ -1,0 +1,6 @@
+Порядок сборки ядра:
+1) make //Сборка кода
+2) sudo make load // Загрузка модуля
+3) cat /proc/devices | grep Simple-driver // Просмотр major-номера
+4) sudo mknod /dev/simple-driver c [major-номер драйвера] 0 // Создание файла со специальными символами
+5) cat /dev/simple-driver // Проверка работоспособности ядра
