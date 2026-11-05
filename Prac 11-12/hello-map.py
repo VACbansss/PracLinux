@@ -11,13 +11,13 @@ int hello_openat(void *ctx) {
    u64 counter = 0;
    u64 *p;
 
-   uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
-   p = counter_table.lookup(&uid);
+   uid = bpf_get_current_uid_gid() & 0xFFFFFFFF; // Маска отсекающая GID, получаем UID
+   p = counter_table.lookup(&uid); //чтение из карты
    if (p != 0) {
       counter = *p;
    }
    counter++;
-   counter_table.update(&uid, &counter);
+   counter_table.update(&uid, &counter); //запись в карту обновленного счетчика
    return 0;
 }
 
@@ -39,15 +39,16 @@ int hello_write(void *ctx) {
 """
 
 b = BPF(text=program)
-
-syscall_openat = b.get_syscall_fnname("openat")
-syscall_write = b.get_syscall_fnname("write")
-
-b.attach_kprobe(event=syscall_openat, fn_name="hello_openat")
+//Привязка ядра
+syscall_openat = b.get_syscall_fnname("openat") //Открытие или создание файла
+syscall_write = b.get_syscall_fnname("write") //Запись в открытый файл
+   
+//Привязка к событиям в ядре созданных функций hello_openat и hello_write
+b.attach_kprobe(event=syscall_openat, fn_name="hello_openat") 
 b.attach_kprobe(event=syscall_write, fn_name="hello_write")
 
 print("Tracing... Hit Ctrl-C to end.")
-
+//Чтение данных из карты
 while True:
     sleep(2)
     s = ""
