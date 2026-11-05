@@ -2,7 +2,7 @@
 #include <linux/init.h>       /* module_init, module_exit */
 #include <linux/module.h>     /* version info, MODULE_LICENSE, MODULE_AUTHOR, printk() */
 
-/*===============================================================================================*/
+//Вызывается при загрузке модуля через insmod
 static int simple_driver_init(void)
 {
     int result = 0;
@@ -19,7 +19,7 @@ static int simple_driver_init(void)
     return 0;
 }
 
-/*===============================================================================================*/
+//Вызывается при выгрузке модуля
 static void simple_driver_exit(void)
 {
     printk(KERN_NOTICE "Simple-driver: module exit\n");
@@ -27,7 +27,7 @@ static void simple_driver_exit(void)
     printk(KERN_NOTICE "Simple-driver: module unloaded\n");
 }
 
-/*===============================================================================================*/
+//Инициализация функций загрузки и выгрузки модуля
 module_init(simple_driver_init);
 module_exit(simple_driver_exit);
 
