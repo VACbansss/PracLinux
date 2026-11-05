@@ -17,20 +17,20 @@ void error(const char *meassage)
 }
 
 
-//a function to send the binary contents of the file after everything else is Success
+//функция для отправки двоичного содержимого файла после того, как всё остальное будет успешно выполнено
 void sendfiles(FILE *fp, int sockfd)
 {
     int n;
     char line[MAX_LINE] = {0};
-    //while its still reading from the file
+    //пока идёт чтение из файла
     while ((n = fread(line, sizeof(char), MAX_LINE, fp)) > 0)
     {
-        //if there is problem reading terminiate
+        //Если возникнут проблемы с чтением
         if (ferror(fp) && (n != MAX_LINE))
         {
             perror("Read Error");
         }
-        //if file is ready to send, try to send it
+        //Если файл готов к отправке, попробуйте его отправить
         if (send(sockfd, line, n, 0) == -1)
         {
             perror("Can't send");
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   {
     error("port num not provided\n");
   }
-  //regular decleration for the server program
+  //обычное объявление для серверной программы
     int sockfd, portno, n, newsockfd;
     char buffer[256];
     struct sockaddr_in serv_addr, cli_addr;
@@ -54,44 +54,44 @@ int main(int argc, char *argv[])
     if (sockfd < 0){
       error("error opening socket");
     }
-    //cleaning the struct serv_addr and filling it with the corect info
-    //for IPv4 and TCP with the provided port number
+    //очистка структуры serv_addr и заполнение её корректными данными
+    //для IPv4 и TCP с указанным номером порта
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family=AF_INET;
     portno = atoi (argv[1]);
     serv_addr.sin_addr.s_addr=INADDR_ANY;
     serv_addr.sin_port=htons(portno);
 
-    //try to connect the file descriptor with the ip add, and port.(bind them)
+    //Попробуйте связать дескриптор файла с IP-адресом и портом (привяжите их).
     if (bind(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) < 0)
     {
         error("Binding fail\n");
     }
 
-//if binding was success, that means the server program is connected to then
-//outside world, which means it now can keep running forever waiting.
+//Если привязка прошла успешно, это означает, что серверная программа теперь подключена
+//Внешний мир, а это значит, что теперь она может продолжать работать бесконечно, ожидая.
     while(1){
 
-        // trying to coonnect for any specfic client through newsockfd
+        // попытка установить соединение для конкретного клиента через newsockfd
         listen(sockfd, 5);
         clilen=sizeof(cli_addr);
         newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-        //if connecting to that specfic client failed, close them and keep listening
+        //Если подключение к этому конкретному клиенту не удалось, закройте его и продолжайте прослушивание.
         if(newsockfd<0){
             close(newsockfd);
             continue;
         }
 
-        //trying to recieve the desieried file name
+        //попытка получить желаемое имя файла
         bzero(buffer, 256);
         n = read(newsockfd, buffer, 255);
         if (n<0){
           close(newsockfd);
           continue;
         }
-        //try to open that file
+        //попробуй открыть этот файл
         FILE *fp = fopen(buffer, "rb");
-        //if couldnt open send [F]ail and start serving others
+        //если открыть не удалось — отправьте [F]ail и переходите к обслуживанию других
         if (fp == NULL)
         {
             char errors[2]="F";
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
             close(newsockfd);
             continue;
        }
-       //if opened say [S]uccess
+       //если открыто [S]uccess
 
         buffer[0]='\0';
         char errorss[2]="S";
@@ -113,8 +113,7 @@ int main(int argc, char *argv[])
           continue;
         }
 
-        //try to send the file. no matter if u can or cant, just close the client
-        //and file, and start serving others
+        //Попробуй отправить файл. Вне зависимости от того, получится или нет
         sendfiles(fp, newsockfd);
         fclose(fp);
         close(newsockfd);
