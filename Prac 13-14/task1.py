@@ -2,7 +2,6 @@
 from bcc import BPF
 from time import sleep
 
-# Используем tracepoint kmem:kmalloc и kmem:kfree вместо kprobe
 bpf_text = r"""
 #include <uapi/linux/ptrace.h>
 #include <linux/sched.h>
