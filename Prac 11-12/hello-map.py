@@ -39,16 +39,16 @@ int hello_write(void *ctx) {
 """
 
 b = BPF(text=program)
-//Привязка ядра
-syscall_openat = b.get_syscall_fnname("openat") //Открытие или создание файла
-syscall_write = b.get_syscall_fnname("write") //Запись в открытый файл
+# Привязка ядра
+syscall_openat = b.get_syscall_fnname("openat") # Открытие или создание файла
+syscall_write = b.get_syscall_fnname("write") # Запись в открытый файл
    
-//Привязка к событиям в ядре созданных функций hello_openat и hello_write
+# Привязка к событиям в ядре созданных функций hello_openat и hello_write
 b.attach_kprobe(event=syscall_openat, fn_name="hello_openat") 
 b.attach_kprobe(event=syscall_write, fn_name="hello_write")
 
 print("Tracing... Hit Ctrl-C to end.")
-//Чтение данных из карты
+# Чтение данных из карты
 while True:
     sleep(2)
     s = ""
