@@ -42,13 +42,13 @@ int hello(void *ctx) {
 b = BPF(text=program)
 syscall = b.get_syscall_fnname("execve")
 b.attach_kprobe(event=syscall, fn_name="hello")
-//Обработка событий
+# Обработка событий
 def print_event(cpu, data, size):
    data = b["output"].event(data)
    msg = data.message.decode('utf-8', errors='ignore').rstrip('\x00')
    print(f"{data.pid} {data.uid} {data.command.decode()} {msg}")
 
-// Инициирует вызов функции print_event каждый раз когда в пространство пользователя (output) попадают события
+# Инициирует вызов функции print_event каждый раз когда в пространство пользователя (output) попадают события
 b["output"].open_perf_buffer(print_event)
 while True:
    b.perf_buffer_poll()
