@@ -1,0 +1,5 @@
+Запуск программы:
+
+1) sudo apt install -y python3-bpfcc bpfcc-tools
+2) sudo apt install -y linux-headers-$(uname -r)
+3) su python3 task1.py
